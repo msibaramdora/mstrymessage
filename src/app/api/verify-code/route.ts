@@ -9,8 +9,10 @@ const VerifyCodePayloadSchema = z.object({
 })
 
 export async function POST(request: Request) {
+  // db connection
   await dbConnect()
 
+  // get user from request body
   try {
     const requestBody = await request.json()
     const validationResult = VerifyCodePayloadSchema.safeParse(requestBody)
@@ -32,6 +34,7 @@ export async function POST(request: Request) {
     const { username, code } = validationResult.data
 
     const decodedUsername = decodeURIComponent(username)
+    console.log(username, code, decodedUsername)
     const user = await UserModel.findOne({ username: decodedUsername }) // Corrected field name from usernamee
 
     if (!user) {
@@ -51,7 +54,7 @@ export async function POST(request: Request) {
 
     const isCodeValid = user.verifyCode === code
     const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date()
-
+    // Check if the verification code is valid and not expired
     if (!isCodeValid) {
       return Response.json(
         { success: false, message: 'Incorrect verification code.' },
@@ -88,7 +91,8 @@ export async function POST(request: Request) {
       )
     }
   } catch (error) {
-    console.error('Error Verification user', error)
+    // Log the error and return a 500 response
+    console.error('Error verifying user', error)
     return Response.json(
       {
         success: false,

@@ -8,17 +8,19 @@ const UsernameQuerySchema = z.object({
 })
 
 export async function GET(request: Request) {
+  // Connect to the database
   await dbConnect()
 
   try {
+    // Extract query parameters from the request URL
     const { searchParams } = new URL(request.url)
     const queryParams = {
       username: searchParams.get('username'),
     }
-
+    // Validate the query parameters using Zod schema
     const result = UsernameQuerySchema.safeParse(queryParams)
 
-    console.log(result)
+    // If validation fails, return an error response
     if (!result.success) {
       const usernameError = result.error.format().username?._errors || []
       return Response.json(
@@ -36,21 +38,21 @@ export async function GET(request: Request) {
     }
 
     const { username } = result.data
-
+    //find user by username
     const existingVerifiedUser = await UserModel.findOne({
       username,
       isVerified: true,
     })
-
+    // Check if the username is already taken by a verified user
     if (existingVerifiedUser) {
       return Response.json(
-        { sucess: false, message: 'Username is already taken' },
+        { success: false, message: 'Username is already taken' },
         {
           status: 200,
         }
       )
     }
-
+    // If no user is found, the username is unique
     return Response.json(
       {
         success: true,
@@ -61,6 +63,7 @@ export async function GET(request: Request) {
       }
     )
   } catch (error) {
+    // Handle any errors that occur during the process
     console.error('Error checking username', error)
     return Response.json(
       {

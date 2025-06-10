@@ -4,8 +4,10 @@ import { authOptions } from '../auth/[...nextauth]/option'
 import mongoose from 'mongoose'
 import UserModel from '@/model/User'
 
+console.log("get-message/server")
+
 // This route handles fetching messages for the authenticated user
-async function GET(request: Request) {
+export async function GET(request: Request) {
   // Connect to the database
   await dbConnect()
 
@@ -61,7 +63,7 @@ async function GET(request: Request) {
     return Response.json(
       {
         success: true,
-        message: user[0].messages,
+        messages: user[0].messages,
       },
       {
         status: 200,

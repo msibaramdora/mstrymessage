@@ -4,7 +4,7 @@ import UserModel from '@/model/User'
 import { Message } from '@/model/User'
 import { getServerSession } from 'next-auth'
 
-export async function POST(
+export async function DELETE(
   request: Request,
   {
     params,
@@ -22,7 +22,7 @@ export async function POST(
   const user = session?.user
 
   //Check user authenticated or not
-  if (!user || session) {
+  if (!user || !session) {
     return Response.json(
       {
         success: false,

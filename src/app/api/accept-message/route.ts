@@ -3,7 +3,7 @@ import dbConnect from '@/lib/dbConnect'
 import { authOptions } from '../auth/[...nextauth]/option'
 import UserModel from '@/model/User'
 
-async function POST(request: Request) {
+export async function POST(request: Request) {
   // db connection
   await dbConnect()
 
@@ -12,7 +12,7 @@ async function POST(request: Request) {
   // get user from session
   const user = session?.user
 
-  if (!user || session.user) {
+  if (!user || !session.user) {
     return Response.json(
       {
         success: false,
@@ -29,12 +29,14 @@ async function POST(request: Request) {
   // get acceptMessage from request body
   const { acceptMessage } = await request.json()
 
+    console.log(acceptMessage)
   // Validate acceptMessage
   if (
     typeof acceptMessage !== 'boolean' ||
     acceptMessage === null ||
     acceptMessage === undefined
   ) {
+    console.log(acceptMessage)
     return Response.json(
       {
         success: false,
@@ -48,7 +50,7 @@ async function POST(request: Request) {
 
   // Update user's isAcceptingMessage field
   try {
-    const updateUser = UserModel.findByIdAndUpdate(
+    const updateUser = await UserModel.findByIdAndUpdate(
       userId,
       { isAcceptingMessage: acceptMessage },
       { new: true }
@@ -70,8 +72,7 @@ async function POST(request: Request) {
     // If the update is successful, return the updated user
     return Response.json({
       success: true,
-      message: 'Message acceptance status successfully updated',
-      updateUser,
+      isAcceptingMessages: updateUser.isAcceptingMessage,
     })
   } catch (error) {
     console.error('Error updating message acceptance status:', error)
@@ -87,7 +88,7 @@ async function POST(request: Request) {
   }
 }
 
-async function GET(request: Request) {
+export async function GET(request: Request) {
   // db connection
   await dbConnect()
   // get session

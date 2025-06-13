@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import { useDebounceCallback } from 'usehooks-ts'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { signUpSchema } from '@/schemas/signInSchema'
+import { signUpSchema } from '@/schemas/signUpSchema'
 import { ApiResponse } from '@/types/ApiResponse'
 import axios from 'axios'
 import {
@@ -152,7 +152,7 @@ function Page() {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" className='cursor-pointer' disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait

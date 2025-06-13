@@ -17,8 +17,11 @@ import axios, { AxiosError } from 'axios'
 import { useParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
+import { useState } from 'react'
+import { Loader2 } from 'lucide-react'
 
 function Page() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const params = useParams<{ username: string }>()
 
@@ -31,6 +34,7 @@ function Page() {
 
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
     try {
+      setIsSubmitting(true)
       const response = axios.post('/api/verify-code', {
         username: params.username,
         code: data.code,
@@ -40,6 +44,8 @@ function Page() {
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>
       console.log(axiosError)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -67,7 +73,15 @@ function Page() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Verify</Button>
+            <Button type="submit" className='cursor-pointer' disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
+                </>
+              ) : (
+                'Verify'
+              )}
+            </Button>
           </form>
         </Form>
       </div>

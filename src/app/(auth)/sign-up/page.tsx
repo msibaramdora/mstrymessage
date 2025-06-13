@@ -52,7 +52,6 @@ function Page() {
         const response = await aixos.get(
           `/api/check-username-unqiue?username=${username}`
         )
-        console.log('response', response)
         setUsernameMessage(response.data.message)
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>
@@ -72,11 +71,9 @@ function Page() {
     try {
       const response = await axios.post<ApiResponse>('/api/sign-up', data)
       toast('Success')
-      console.log(response)
       router.replace(`/verify/${username}`)
       setIsSubmitting(false)
     } catch (error) {
-      console.error('Error in signup of user', error)
       const axiosError = error as AxiosError<ApiResponse>
       const errorMessage = axiosError.response?.data.message
       setIsSubmitting(false)

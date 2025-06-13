@@ -34,7 +34,6 @@ export async function POST(request: Request) {
     const { username, code } = validationResult.data
 
     const decodedUsername = decodeURIComponent(username)
-    console.log(username, code, decodedUsername)
     const user = await UserModel.findOne({ username: decodedUsername }) // Corrected field name from usernamee
 
     if (!user) {
@@ -92,7 +91,6 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     // Log the error and return a 500 response
-    console.error('Error verifying user', error)
     return Response.json(
       {
         success: false,

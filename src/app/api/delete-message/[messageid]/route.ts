@@ -57,6 +57,14 @@ export async function DELETE(
       }
     )
   } catch (error) {
-    console.log('Message delete error', error)
+    return Response.json(
+      {
+        success: true,
+        message: 'Internal server error for delete message',
+      },
+      {
+        status: 200,
+      }
+    )
   }
 }

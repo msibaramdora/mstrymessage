@@ -39,11 +39,10 @@ function Page() {
         username: params.username,
         code: data.code,
       })
-
+      setIsSubmitting(false)
       router.replace('/sign-in')
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>
-      console.log(axiosError)
     } finally {
       setIsSubmitting(false)
     }

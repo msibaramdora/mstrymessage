@@ -84,7 +84,6 @@ export async function POST(request: Request) {
       verifyCode
     )
 
-    console.log('emailResponse', emailResponse)
     // If email sending fails, return an error
     if (!emailResponse.success) {
       return Response.json(
@@ -107,7 +106,6 @@ export async function POST(request: Request) {
     )
   } catch (error) {
     // Log the error and return a 500 response
-    console.error('Error registering user', error)
     return Response.json(
       {
         success: false,

@@ -33,14 +33,12 @@ function UserDashboard() {
 
   const { register, watch, setValue } = form
   const acceptMessage = watch('acceptMessage')
-  console.log('acceptMessage', acceptMessage)
 
   //fetch the user message except or not except
   const fetchAcceptMessages = useCallback(async () => {
     setIsSwitchLoading(true)
     try {
       const response = await axios.get<ApiResponse>('/api/accept-message')
-      console.log('response', response)
       setValue('acceptMessage', response.data.isAcceptingMessage!)
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>
@@ -58,7 +56,6 @@ function UserDashboard() {
       try {
         const response = await axios.get<ApiResponse>('/api/get-message')
         setMessages(response.data.messages || [])
-        console.log('all message', response)
         if (refresh) {
           toast.message('Showing latest messages')
         }
@@ -88,11 +85,9 @@ function UserDashboard() {
   const handleSwitchChange = async () => {
     setIsSwitchLoading(true)
     try {
-      console.log('acceptMessages89', acceptMessage)
       const response = await axios.post<ApiResponse>('/api/accept-message', {
         acceptMessage: !acceptMessage,
       })
-      console.log('response93', response)
       setValue('acceptMessage', !acceptMessage)
       toast.success(response.data.message)
     } catch (error) {

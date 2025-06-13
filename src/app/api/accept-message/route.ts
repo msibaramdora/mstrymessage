@@ -29,14 +29,12 @@ export async function POST(request: Request) {
   // get acceptMessage from request body
   const { acceptMessage } = await request.json()
 
-    console.log(acceptMessage)
   // Validate acceptMessage
   if (
     typeof acceptMessage !== 'boolean' ||
     acceptMessage === null ||
     acceptMessage === undefined
   ) {
-    console.log(acceptMessage)
     return Response.json(
       {
         success: false,
@@ -75,7 +73,6 @@ export async function POST(request: Request) {
       isAcceptingMessages: updateUser.isAcceptingMessage,
     })
   } catch (error) {
-    console.error('Error updating message acceptance status:', error)
     return Response.json(
       {
         success: false,
@@ -137,7 +134,6 @@ export async function GET(request: Request) {
       }
     )
   } catch (error) {
-    console.log('Error retrieving message acceptance status: ', error)
     return Response.json(
       {
         success: false,

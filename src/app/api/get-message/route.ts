@@ -4,7 +4,6 @@ import { authOptions } from '../auth/[...nextauth]/option'
 import mongoose from 'mongoose'
 import UserModel from '@/model/User'
 
-console.log("get-message/server")
 
 // This route handles fetching messages for the authenticated user
 export async function GET(request: Request) {
@@ -70,7 +69,6 @@ export async function GET(request: Request) {
       }
     )
   } catch (error) {
-    console.error('An unexpected error occurred:', error)
     return Response.json(
       {
         success: false,

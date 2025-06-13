@@ -27,7 +27,7 @@ type MessageCardProps = {
 }
 
 export function MessageCard({ message, onMessageDelete }: MessageCardProps) {
-  console.log('message in card', message)
+
   const handleDeleteConfirm = async () => {
     try {
       const response = await axios.delete<ApiResponse>(

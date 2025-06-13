@@ -80,7 +80,7 @@ function Page() {
       const axiosError = error as AxiosError<ApiResponse>
       const errorMessage = axiosError.response?.data.message
       setIsSubmitting(false)
-      toast('Sign in fail')
+      toast.error('Sign in fail')
     }
   }
 

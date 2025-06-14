@@ -1,28 +1,23 @@
-// This file handles the user registration process.
-
+import { NextResponse } from 'next/server'
 import dbConnect from '@/lib/dbConnect'
 import UserModel from '@/model/User'
 import bcrypt from 'bcryptjs'
-
 import { sendVerificationEmail } from '@/helpers/sendVerificationEmail'
 
 export async function POST(request: Request) {
-  // db connection
   await dbConnect()
 
-  // get user from request body
   try {
     const { username, email, password } = await request.json()
-    const existingUserVerifiedByUsername = await UserModel.findOne({
-      username,
-    })
+    const existingUserVerifiedByUsername = await UserModel.findOne({ username })
 
-    // Validate username
+    console.log('username in 14', username, email, password)
+
     if (
       existingUserVerifiedByUsername &&
       existingUserVerifiedByUsername.isVerified
     ) {
-      return Response.json(
+      return NextResponse.json(
         {
           success: false,
           message: 'Username is already taken',
@@ -30,17 +25,15 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     } else {
-      // If user exists but not verified, delete the user
       await UserModel.findByIdAndDelete(existingUserVerifiedByUsername?._id)
     }
-    // Validate email
-    const existingUserByEmail = await UserModel.findOne({ email })
 
+    const existingUserByEmail = await UserModel.findOne({ email })
     const verifyCode = Math.floor(10000 + Math.random() * 900000).toString()
-    // Validate password
+
     if (existingUserByEmail) {
       if (existingUserByEmail.isVerified) {
-        return Response.json(
+        return NextResponse.json(
           {
             success: false,
             message: 'User already exists with this email',
@@ -48,7 +41,6 @@ export async function POST(request: Request) {
           { status: 400 }
         )
       } else {
-        // If user exists but not verified, update password and verify code
         const hasedPassword = await bcrypt.hash(password, 10)
         existingUserByEmail.password = hasedPassword
         existingUserByEmail.verifyCode = verifyCode
@@ -56,10 +48,8 @@ export async function POST(request: Request) {
         await existingUserByEmail.save()
       }
     } else {
-      // If user does not exist, create a new user
       const hasedPassword = await bcrypt.hash(password, 10)
       const expiryDate = new Date()
-
       expiryDate.setHours(expiryDate.getHours() + 1)
 
       const newUser = new UserModel({
@@ -73,11 +63,10 @@ export async function POST(request: Request) {
         messages: [],
       })
 
-      // Save the new user to the database
       await newUser.save()
     }
 
-    // Send verification email
+    console.log('newUser', email, username, verifyCode)
     const emailResponse = await sendVerificationEmail(
       email,
       username,
@@ -85,20 +74,17 @@ export async function POST(request: Request) {
     )
 
     console.log('emailResponse', emailResponse)
-    // If email sending fails, return an error
-    if (!emailResponse.success) {
-      return Response.json(
+    if (!emailResponse) {
+      return NextResponse.json(
         {
           success: false,
-          message: emailResponse.message,
+          message: 'Error in email sending',
         },
         { status: 500 }
       )
     }
 
-    // If everything is successful, return the status code
-    // and a success message
-    return Response.json(
+    return NextResponse.json(
       {
         success: true,
         message: 'User registered successfully. Please verify your account.',
@@ -106,16 +92,13 @@ export async function POST(request: Request) {
       { status: 200 }
     )
   } catch (error) {
-    // Log the error and return a 500 response
     console.error('Error registering user', error)
-    return Response.json(
+    return NextResponse.json(
       {
         success: false,
         message: 'Error registering user',
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     )
   }
 }

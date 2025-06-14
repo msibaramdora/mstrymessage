@@ -6,16 +6,13 @@ import { getServerSession } from 'next-auth'
 
 export async function DELETE(
   request: Request,
-  {
-    params,
-  }: {
-    params: { messageid: string }
-  }
+  { params }: { params: Promise<{ messageid: string }> }
 ) {
   //dbConnect
   await dbConnect()
 
-  const messageId = (await params).messageid
+  const { messageid } = await params
+  console.log('messageId', messageid)
 
   const session = await getServerSession(authOptions)
 
@@ -37,7 +34,7 @@ export async function DELETE(
     //Delete the message
     const updateResult = await UserModel.updateOne(
       { _id: user?._id },
-      { $pull: { messages: { _id: messageId } } }
+      { $pull: { messages: { _id: messageid } } }
     )
 
     if (updateResult.modifiedCount === 0) {
@@ -57,14 +54,6 @@ export async function DELETE(
       }
     )
   } catch (error) {
-    return Response.json(
-      {
-        success: true,
-        message: 'Internal server error for delete message',
-      },
-      {
-        status: 200,
-      }
-    )
+    console.log('Message delete error', error)
   }
 }
